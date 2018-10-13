@@ -1,38 +1,86 @@
-<html>
-    <head>
-    </head>
-    <body>
-        <div>
-            t :
-            <span id="t"></span>
-        </div>
-        <div>
-            x :
-            <span id="x"></span>
-        </div>
-        <div>
-            y :
-            <span id="y"></span>
-        </div>
-        <div>
-            z :
-            <span id="z"></span>
-        </div>
-        <script src="/socket.io/socket.io.js"></script>
-        <script>
-         var elems = {
-             t: document.getElementById('t'),
-             x: document.getElementById('x'),
-             y: document.getElementById('y'),
-             z: document.getElementById('z')
-         }
-         var socket = io();
-         socket.on('data', (data) => {
-             t.innerText = data.t
-             x.innerText = data.x
-             y.innerText = data.y
-             z.innerText = data.z
-         })
-        </script>
-    </body>
-</html>
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdn.jsdelivr.net/npm/vega@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@3"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body style="background-color: #0f1217">
+
+    <div id="vis"></div>
+
+    <script>
+        (async function () {
+            var socket = io();
+            const spec = {
+                "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+                "description": "A simple bar chart with embedded data.",
+                "width": 480,
+                "data": {
+                    "name": "table"
+                },
+                "mark": {
+                    "type": "area",
+                    "line": {
+                        "color": "#4899ff",
+                        "strokeWidth": 2
+                    },
+                    "color": "#111821"
+                },
+                "encoding": {
+                    "y": {
+                        "field": "z",
+                        "type": "quantitative",
+                        "scale": {
+                            "zero": false
+                        }
+                    },
+                    "x": {
+                        "field": "t",
+                        "type": "temporal"
+                    },
+                    "opacity": {
+                        "value": 1
+                    }
+                },
+                "config": {
+                    "axis": {
+                        "grid": false,
+                        "ticks": false,
+                        "domainColor": "#000000"
+                    }
+
+
+                }
+            };
+            const dataInView = [];
+            vegaEmbed('#vis', spec, {
+                    renderer: "svg",
+                    actions: false
+                })
+                .then(function (result) {
+                    const view = result.view;
+                    // const dataInView = []
+                    // connect to simple echo server
+                    const conn = new WebSocket("wss://echo.websocket.org");
+
+                    socket.on('data', function(data) {
+                        dataInView.push(data.t)
+                        view.insert('table', data).run()
+                        if (dataInView.length > 100) {
+                            const t = dataInView.shift()
+                            /* console.log(t) */
+                            view.remove("table", function (item) {
+                                return item.t === t
+                            }).run();
+                            /* console.log(dataInView); */
+                        }
+                    })
+                })
+                .catch(console.warn);
+        })()
+    </script>
+</body>
