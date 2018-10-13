@@ -14,6 +14,10 @@ app.get('/style.css', function(req, res) {
   res.sendFile(__dirname + '/public/style.css')
 })
 
+app.get('/empty.svg', function(req, res) {
+  res.sendFile(__dirname + '/public/empty.svg')
+})
+
 app.get('/mobile', function(req, res) {
   res.sendFile(__dirname + '/public/mobileview.html')
 })

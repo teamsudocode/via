@@ -3,6 +3,7 @@
    License: none (public domain)
 */
 @import url("https://fonts.googleapis.com/css?family=Rubik");
+
 html,
 body,
 div,
@@ -135,7 +136,7 @@ table {
 }
 
 .fade-enter-active {
-  transition: opacity 3s ease-in-out;
+  transition: opacity 1s ease-in-out;
 }
 
 .fade-enter-to {
@@ -176,6 +177,7 @@ table {
   color: #ffffff;
   letter-spacing: 0.2px;
 }
+
 .header span {
   vertical-align: super;
 }
@@ -187,6 +189,7 @@ table {
   margin-bottom: 4em;
   align-items: center;
 }
+
 .nav .status {
   font-family: Rubik-Regular;
   font-size: 16px;
@@ -196,6 +199,7 @@ table {
   flex-direction: row;
   align-items: center;
 }
+
 .nav .status .beep {
   height: 6px;
   width: 6px;
@@ -227,46 +231,74 @@ table {
 .car__body {
   animation: shake 0.3s ease-in-out infinite alternate;
 }
+
 .car__line {
   transform-origin: center right;
   stroke-dasharray: 22;
   animation: line 0.8s ease-in-out infinite;
   animation-fill-mode: both;
 }
+
 .car__line--top {
   animation-delay: 0s;
 }
+
 .car__line--middle {
   animation-delay: 0.3s;
 }
+
 .car__line--bottom {
   animation-delay: 0.4s;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1em;
+}
+
+.empty>h1 {
+  font-family: 'Rubik';
+  font-weight: 300!important;
+  font-size: 48px;
+  margin-top: 2em;
+  color: rgba(255, 255, 255, 0.50);
+  letter-spacing: 0.4px;
+  text-align: center;
 }
 
 @keyframes shake {
   0% {
     transform: translateY(-1%);
   }
+
   100% {
     transform: translateY(3%);
   }
 }
+
 @keyframes line {
   0% {
     stroke-dashoffset: 22;
   }
+
   25% {
     stroke-dashoffset: 22;
   }
+
   50% {
     stroke-dashoffset: 0;
   }
+
   51% {
     stroke-dashoffset: 0;
   }
+
   80% {
     stroke-dashoffset: -22;
   }
+
   100% {
     stroke-dashoffset: -22;
   }

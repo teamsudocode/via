@@ -2,7 +2,7 @@ var app = new Vue({
     el: '#app',
     data() {
         return {
-            active: true,
+            active: false,
             eventType: "Encountered a Pothole", //driving for null
             condition: "Good",
             speed: 50,
