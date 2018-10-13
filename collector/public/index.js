@@ -106,6 +106,7 @@ var browserwidth =
             // const dataInView = []
             // connect to simple echo server
             const conn = new WebSocket("wss://echo.websocket.org");
+            var prevAcc = undefined
             conn.onopen = function (event) {
                 const view = result.view;
                 // const dataInView = []
@@ -113,7 +114,16 @@ var browserwidth =
                 // const conn = new WebSocket("wss://echo.websocket.org");
 
                 socket.on('data', function(data) {
+
+                    if (prevAcc !== undefined) {
+                        console.log(prevAcc.z, data.z)
+
+                        let vel = (data.z - prevAcc.z) / ((data.t - prevAcc.t) / 1000)
+                        console.log(vel);
+                        app.speed = Math.abs(vel)
+                    }
                     dataInView.push(data.t)
+                    prevAcc = data
                     view.insert('table', data).run()
                     if (dataInView.length > 100) {
                         const t = dataInView.shift()
@@ -123,6 +133,7 @@ var browserwidth =
                         }).run();
                         /* console.log(dataInView); */
                     }
+                    
                 })
 
                 socket.on('status_change', function(res) {
