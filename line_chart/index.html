@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdn.jsdelivr.net/npm/vega@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@3"></script>
+</head>
+
+<body style="background-color: #0f1217">
+
+    <div id="vis"></div>
+
+    <script>
+        (async function () {
+            function fetchJSON(url, options) {
+                return fetch(url, options).then(function (response) {
+                    return response.json().then(function (data) {
+                        return {
+                            status: response.status,
+                            headers: response.headers,
+                            json: data
+                        }
+                    })
+                })
+            }
+            let data = await fetchJSON('./data.json').then((r) => r.json);
+            data = data.data.map(obj => ({
+                t: obj.t % 1000000,
+                x: obj.x,
+                y: obj.y,
+                z: obj.y
+            }));
+            const spec = {
+                "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+                "description": "A simple bar chart with embedded data.",
+                "width": 480,
+                "data": {
+                    "name": "table"
+                },
+                "mark": {
+                    "type": "area",
+                    "line": {
+                        "color": "#4899ff",
+                        "strokeWidth": 2
+                    },
+                    "color": "#111821"
+                },
+                "encoding": {
+                    "y": {
+                        "field": "z",
+                        "type": "quantitative",
+                        "scale": {
+                            "zero": false
+                        }
+                    },
+                    "x": {
+                        "field": "t",
+                        "type": "temporal"
+                    },
+                    "opacity": {
+                        "value": 1
+                    }
+                },
+                "config": {
+                    "axis": {
+                        "grid": false,
+                        "ticks": false,
+                        "domainColor": "#000000"
+                    }
+
+
+                }
+            };
+            const dataInView = [];
+            vegaEmbed('#vis', spec, {
+                    renderer: "svg",
+                    actions: false
+                })
+                .then(function (result) {
+                    const view = result.view;
+                    // const dataInView = []
+                    // connect to simple echo server
+                    const conn = new WebSocket("wss://echo.websocket.org");
+
+                    conn.onopen = function (event) {
+                        // insert data as it arrives from the socket
+                        conn.onmessage = function (event) {
+                            console.log(event.data);
+                            dataInView.push(JSON.parse(event.data).t);
+                            // Use the Vega view api to insert data
+                            // view.insert("table", JSON.parse(event.data)).run();
+                            view.insert("table", JSON.parse(event.data)).run()
+                            // console.log(dataInView);
+                            if (dataInView.length > 100) {
+                                const t = dataInView.shift()
+                                console.log(t)
+                                view.remove("table", function (item) {
+                                    return item.t === t
+                                }).run();
+                                console.log(dataInView);
+                                // dataInView.shift();
+                            }
+                            //view.change('table', changeSet).run();
+                        }
+
+                        // send some data into the echo socket every second
+                        const interval = window.setInterval(function () {
+                            if (data.length) {
+                                conn.send(JSON.stringify(data.shift()));
+                            } else {
+                                clearInterval(interval);
+                            }
+                        }, 100);
+                    }
+                })
+                .catch(console.warn);
+        })()
+    </script>
+</body>
