@@ -117,10 +117,7 @@ var browserwidth =
                 socket.on('data', function(data) {
 
                     if (prevAcc !== undefined) {
-                        console.log(prevAcc.z, data.z)
-
                         let vel = (data.z - prevAcc.z) / ((data.t - prevAcc.t) / 1000)
-                        console.log(vel);
                         app.speed = Math.abs(vel)
                     }
                     dataInView.push(data.t)
