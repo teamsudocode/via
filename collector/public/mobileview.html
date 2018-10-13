@@ -78,6 +78,7 @@
                  elems.btn.innerText = 'Stop'
              }
              running = !running
+             socket.emit('status_change', {state: running})
          }
         </script>
     </body>

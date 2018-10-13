@@ -3,11 +3,19 @@ var http = require('http').Server(app)
 var io = require('socket.io')(http)
 
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html')
+  res.sendFile(__dirname + '/public/index.html')
+})
+
+app.get('/index.js', function(req, res) {
+  res.sendFile(__dirname + '/public/index.js')
+})
+
+app.get('/style.css', function(req, res) {
+  res.sendFile(__dirname + '/public/style.css')
 })
 
 app.get('/mobile', function(req, res) {
-  res.sendFile(__dirname + '/mobileview.html')
+  res.sendFile(__dirname + '/public/mobileview.html')
 })
 
 io.on('connection', function(socket){
@@ -15,6 +23,9 @@ io.on('connection', function(socket){
   socket.on('data', function(data) {
     // console.log(data)
     io.emit('data', data)
+  })
+  socket.on('status_change', function(data) {
+    io.emit('status_change', data)
   })
 });
 

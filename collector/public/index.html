@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+    <title>via</title>
+</head>
+
+<body>
+    <div id="app">
+        <div class="nav">
+            <div class="logo">
+                <img src='data:image/svg+xml;utf8,<svg width="126px" height="37px" viewBox="0 0 126 37" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><title>Group 3</title><desc>Created with Sketch.</desc>
+                    <defs>
+                        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+                            <stop stop-color="#4ACCE8" offset="0%"></stop>
+                            <stop stop-color="#0759BD" offset="100%"></stop>
+                        </linearGradient>
+                    </defs>
+                    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <g id="Desktop" transform="translate(-140.000000, -44.000000)">
+                            <g id="Group-3" transform="translate(141.000000, 39.000000)">
+                                <g id="Group-6">
+                                    <g id="Group" transform="translate(0.000000, 5.082353)" fill="url(#linearGradient-1)">
+                                        <path d="M24.6269199,13.6311428 L38.5504334,21.1406018 C38.8384331,21.2959305 38.9459841,21.6553191 38.7906554,21.9433187 C38.7400519,22.0371442 38.6650715,22.1155788 38.5736186,22.1703539 L15.5966899,35.9322371 C15.4182509,36.039112 15.1968372,36.0445898 15.0133316,35.9466694 L-0.220243478,27.8178891 C-0.508931013,27.6638427 -0.61807921,27.3049359 -0.4640328,27.0162484 C-0.409288037,26.9136551 -0.325563201,26.8294399 -0.223291348,26.7740969 L24.0636988,13.631535 C24.2393703,13.5364728 24.4511161,13.5363254 24.6269199,13.6311428 Z" id="Rectangle-Copy" transform="translate(19.185667, 24.785342) scale(-1, 1) translate(-19.185667, -24.785342) "></path>
+                                        <path d="M22.6469991,7.89933366 L36.619779,0.126772199 C36.9057318,-0.0322931826 37.2664903,0.0705693789 37.4255557,0.356522161 C37.4693938,0.435330194 37.4946635,0.523105504 37.4994393,0.613159257 L38.9121518,27.2519972 C38.924342,27.4818619 38.8022899,27.6979818 38.5991479,27.8062392 L23.4226651,35.8940135 C23.1338943,36.0479038 22.7750466,35.9385615 22.6211563,35.6497907 C22.5751227,35.5634099 22.5512073,35.4669697 22.5515474,35.369089 L22.6469991,7.89933366 Z" id="Rectangle"></path>
+                                    </g>
+                                    <text id="VIA" font-family="Rubik-Bold, Rubik" font-size="40.6588235" font-weight="bold" fill="#FFFFFF">
+                                        <tspan x="55" y="38">VIA</tspan>
+                                    </text>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </svg>'>
+            </div>
+            <div class="status">
+                <div class="beep" :class="{ redbg: !active, greenbg: active }"></div><span v-if="active">Logging Active</span><span
+                    v-if="!active">Logging Inactive</span>
+            </div>
+        </div>
+        <div class="chart">
+            <div class="header">
+                <div class="loader">
+                    <svg class="car" width="102" height="40" xmlns="http://www.w3.org/2000/svg">
+                        <g transform="translate(2 1) scale(0.8)" stroke="#4898FF" fill="none" fill-rule="evenodd"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path class="car__body" d="M47.293 2.375C52.927.792 54.017.805 54.017.805c2.613-.445 6.838-.337 9.42.237l8.381 1.863c2.59.576 6.164 2.606 7.98 4.531l6.348 6.732 6.245 1.877c3.098.508 5.609 3.431 5.609 6.507v4.206c0 .29-2.536 4.189-5.687 4.189H36.808c-2.655 0-4.34-2.1-3.688-4.67 0 0 3.71-19.944 14.173-23.902zM36.5 15.5h54.01"
+                                stroke-width="1.5" />
+                            <ellipse class="car__wheel--left" stroke-width="1.5" fill="#0F1217" cx="83.493" cy="30.25"
+                                rx="6.922" ry="6.808" />
+                            <ellipse class="car__wheel--right" stroke-width="1.5" fill="#0F1217" cx="46.511" cy="30.25"
+                                rx="6.922" ry="6.808" />
+                            <path class="car__line car__line--top" d="M22.5 16.5H2.475" stroke-width="1.5" />
+                            <path class="car__line car__line--middle" d="M20.5 23.5H.4755" stroke-width="1.5" />
+                            <path class="car__line car__line--bottom" d="M25.5 9.5h-19" stroke-width="1.5" />
+                        </g>
+                    </svg>
+                </div>
+                <span>Overview</span>
+            </div>
+            <div id="vis">
+            </div>
+        </div>
+
+        <div class="info">
+            <div>
+                <div class="header">
+                    Status
+                </div>
+                <transition name="fade">
+                    <div class="body" :class="eventClass">
+                        {{eventType}}
+                    </div>
+                </transition>
+            </div>
+            <div>
+                <div class="header">
+                    Condition
+                </div>
+                <transition name="fade">
+                    <div class="body" :class="conditionClass">
+                        {{condition}}
+                    </div>
+                </transition>
+            </div>
+            <div>
+                <div class="header">
+                    Speed
+                </div>
+                <div id="animated-number-demo">
+                    <div class="body">
+                        {{animatedNumber}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/vega@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+<script src="/socket.io/socket.io.js"></script> 
+<script src="index.js"></script>
+
+</html>
