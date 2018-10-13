@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title>Add a GeoJSON line</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .mapboxgl-popup {
+            max-width: 400px;
+            border-color: #FF4757;
+            padding: 1em;
+            font: 12px/20px 'Rubik';
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id='map'></div>
+    <script>
+        (async function () {
+            function fetchJSON(url, options) {
+                return fetch(url, options).then(function (response) {
+                    return response.json().then(function (data) {
+                        return {
+                            status: response.status,
+                            headers: response.headers,
+                            json: data
+                        }
+                    })
+                })
+            }
+            let data1 = await fetchJSON(
+                'https://api.mapbox.com/directions/v5/mapbox/driving/81.7686003%2C25.430287%3B81.8229763%2C25.4452978.json?access_token=pk.eyJ1IjoiZ3V5d2hvZGVzaWducyIsImEiOiJjam43ajRxbW4wYWV4M3Fwank4dTNsZzduIn0.ipHstqtP2KWs2NNPNJThgA&geometries=geojson'
+            ).then((r) => r.json);
+
+            let data2 = await fetchJSON(
+                'https://api.mapbox.com/directions/v5/mapbox/driving/81.7686003%2C25.430287%3B81.802659%2C25.435606%3B81.8229763%2C25.4452978.json?access_token=pk.eyJ1IjoiZ3V5d2hvZGVzaWducyIsImEiOiJjam43ajRxbW4wYWV4M3Fwank4dTNsZzduIn0.ipHstqtP2KWs2NNPNJThgA&geometries=geojson'
+            ).then((r) => r.json);
+
+            // console.log(data2);
+            mapboxgl.accessToken =
+                'pk.eyJ1IjoiZ3V5d2hvZGVzaWducyIsImEiOiJjam43ajRxbW4wYWV4M3Fwank4dTNsZzduIn0.ipHstqtP2KWs2NNPNJThgA';
+            var map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/basic-v9',
+                center: [81.791422, 25.435019],
+                zoom: 15
+            });
+
+            map.setStyle('mapbox://styles/mapbox/dark-v9');
+            const data3 = data1.routes[0].geometry.coordinates.slice(0, 7);
+            const data4 = data1.routes[0].geometry.coordinates.slice(6, 8);
+            const data5 = data1.routes[0].geometry.coordinates.slice(7);
+
+
+
+            const data6 = data2.routes[0].geometry.coordinates.slice(0, 5);
+            const data7 = data2.routes[0].geometry.coordinates.slice(4, 7);
+            const data8 = data2.routes[0].geometry.coordinates.slice(6);
+            // data3.routes[0].geometry.coordinates = data1.routes[0].geometry.coordinates.slice(0,9)
+            // data4.routes[0].geometry.coordinates = data1.routes[0].geometry.coordinates.slice(9, 11)
+            // data5.routes[0].geometry.coordinates = data1.routes[0].geometry.coordinates.slice(11)
+
+            var layerAdd = (color, id, coordinate, stroke) => {
+                map.on('load', function () {
+                    // console.log('add ' + id)
+                    map.addLayer({
+                        "id": id,
+                        "type": "line",
+                        "source": {
+                            "type": "geojson",
+                            "data": {
+                                "type": "Feature",
+                                "properties": {},
+                                "geometry": {
+                                    "type": "LineString",
+                                    "coordinates": coordinate
+                                }
+                            }
+                        },
+                        "layout": {
+                            "line-join": "round",
+                            "line-cap": "round"
+                        },
+                        "paint": {
+                            "line-color": color,
+                            "line-width": stroke
+                        }
+                    });
+                })
+            }
+
+            layerAdd('#4898FF', 'route3', data3, 3)
+            // layerAdd('#8333F0', 'route2', data2.routes[0].geometry.coordinates, 3)
+            layerAdd('#4898FF', 'route5', data5, 3)
+            layerAdd('#FF4757', 'route4', data4, 6)
+
+            layerAdd('#2FD86D', 'route6', data6, 3)
+            layerAdd('#FF4757', 'route7', data7, 6)
+            layerAdd('#2FD86D', 'route8', data8, 3)
+
+
+            // Create a popup, but don't add it to the map yet.
+            var popup = new mapboxgl.Popup({
+                closeButton: false,
+                closeOnClick: false
+            });
+
+            map.on('mouseenter', 'route4', function (e) {
+                // Change the cursor style as a UI indicator.
+                map.getCanvas().style.cursor = 'pointer';
+
+                var coordinates = [(data4[0][0] + data4[1][0]) / 2, (data4[0][1] + data4[1][1]) / 2];
+                console.log(data4);
+                var description = 'This route has damaged roads.';
+                popup.setLngLat(coordinates)
+                    .setHTML(description)
+                    .addTo(map);
+            });
+
+            map.on('mouseleave', 'route4', function () {
+                map.getCanvas().style.cursor = '';
+                popup.remove();
+            });
+
+
+
+            map.on('mouseenter', 'route7', function (e) {
+                // Change the cursor style as a UI indicator.
+                map.getCanvas().style.cursor = 'pointer';
+
+                var coordinates = [(data7[0][0] + data7[1][0]) / 2, (data7[0][1] + data7[1][1]) / 2];
+                var description = 'This route has damaged roads.';
+                popup.setLngLat(coordinates)
+                    .setHTML(description)
+                    .addTo(map);
+            });
+
+            map.on('mouseleave', 'route7', function () {
+                map.getCanvas().style.cursor = '';
+                popup.remove();
+            });
+        })()
+    </script>
+
+</body>
+
+</html>
