@@ -1,85 +1,329 @@
 <html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <style>
-         .container {
-             height: 100%;
-             display: flex;
-             flex-direction: column;
-             justify-content: center;
-             align-items: center;
-         }
-         .container .paramter {
-             margin: 20px;
-             text-align: left;
-             width: 80%;
-         }
-         button {
-             border: none;
-             padding: 15px;
-             font-size: 1.5em;
-             border-radius: 5px;
-         }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="parameter">
-                t : <span id="t"></span>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        @import url("https://fonts.googleapis.com/css?family=Rubik");
+        /* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+        html,
+        body,
+        div,
+        span,
+        applet,
+        object,
+        iframe,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        blockquote,
+        pre,
+        a,
+        abbr,
+        acronym,
+        address,
+        big,
+        cite,
+        code,
+        del,
+        dfn,
+        em,
+        img,
+        ins,
+        kbd,
+        q,
+        s,
+        samp,
+        small,
+        strike,
+        strong,
+        sub,
+        sup,
+        tt,
+        var,
+        b,
+        u,
+        i,
+        center,
+        dl,
+        dt,
+        dd,
+        ol,
+        ul,
+        li,
+        fieldset,
+        form,
+        label,
+        legend,
+        table,
+        caption,
+        tbody,
+        tfoot,
+        thead,
+        tr,
+        th,
+        td,
+        article,
+        aside,
+        canvas,
+        details,
+        embed,
+        figure,
+        figcaption,
+        footer,
+        header,
+        hgroup,
+        menu,
+        nav,
+        output,
+        ruby,
+        section,
+        summary,
+        time,
+        mark,
+        audio,
+        video {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            font: inherit;
+            vertical-align: baseline;
+        }
+
+        /* HTML5 display-role reset for older browsers */
+        article,
+        aside,
+        details,
+        figcaption,
+        figure,
+        footer,
+        header,
+        hgroup,
+        menu,
+        nav,
+        section {
+            display: block;
+        }
+
+        body {
+            line-height: 1;
+        }
+
+        ol,
+        ul {
+            list-style: none;
+        }
+
+        blockquote,
+        q {
+            quotes: none;
+        }
+
+        blockquote:before,
+        blockquote:after,
+        q:before,
+        q:after {
+            content: '';
+            content: none;
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        body {
+            background-color: #0F1217;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2em;
+        }
+
+        .parameter {
+            transition-property: all;
+            transition-duration: 0.3s;
+            transition-timing-function: ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .start {
+            background: #4898FF;
+            border-radius: 2px;
+            padding: 0.5em;
+            font-family: 'Rubik';
+            font-weight: 700;
+            font-size: 24px;
+            color: #FFFFFF;
+            letter-spacing: 0.2px;
+            text-align: center;
+            border: none;
+            width: 100%;
+            text-align: center;
+            transition-property: all;
+            transition-duration: 0.3s;
+            transition-timing-function: ease-in-out;
+        }
+
+        .start:focus {
+            outline: none;
+        }
+
+        #t,
+        #x,
+        #y,
+        #z {
+            font-family: 'Rubik' !important;
+            font-weight: 600 !important;
+            font-size: 24px !important;
+            color: #78DDEB !important;
+            letter-spacing: 0.2px !important;
+            text-align: center;
+        }
+
+        .head {
+            font-family: Rubik-Light;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.50);
+            letter-spacing: 0.13px;
+            margin-bottom: 16px;
+        }
+
+        .r1,
+        .r2 {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 1em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div style="text-align:center">
+            <img src='data:image/svg+xml;utf8,<svg width="126px" height="37px" viewBox="0 0 126 37" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><title>Group 3</title><desc>Created with Sketch.</desc>
+                <defs>
+                    <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+                        <stop stop-color="#4ACCE8" offset="0%"></stop>
+                        <stop stop-color="#0759BD" offset="100%"></stop>
+                    </linearGradient>
+                </defs>
+                <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <g id="Desktop" transform="translate(-140.000000, -44.000000)">
+                        <g id="Group-3" transform="translate(141.000000, 39.000000)">
+                            <g id="Group-6">
+                                <g id="Group" transform="translate(0.000000, 5.082353)" fill="url(#linearGradient-1)">
+                                    <path d="M24.6269199,13.6311428 L38.5504334,21.1406018 C38.8384331,21.2959305 38.9459841,21.6553191 38.7906554,21.9433187 C38.7400519,22.0371442 38.6650715,22.1155788 38.5736186,22.1703539 L15.5966899,35.9322371 C15.4182509,36.039112 15.1968372,36.0445898 15.0133316,35.9466694 L-0.220243478,27.8178891 C-0.508931013,27.6638427 -0.61807921,27.3049359 -0.4640328,27.0162484 C-0.409288037,26.9136551 -0.325563201,26.8294399 -0.223291348,26.7740969 L24.0636988,13.631535 C24.2393703,13.5364728 24.4511161,13.5363254 24.6269199,13.6311428 Z" id="Rectangle-Copy" transform="translate(19.185667, 24.785342) scale(-1, 1) translate(-19.185667, -24.785342) "></path>
+                                    <path d="M22.6469991,7.89933366 L36.619779,0.126772199 C36.9057318,-0.0322931826 37.2664903,0.0705693789 37.4255557,0.356522161 C37.4693938,0.435330194 37.4946635,0.523105504 37.4994393,0.613159257 L38.9121518,27.2519972 C38.924342,27.4818619 38.8022899,27.6979818 38.5991479,27.8062392 L23.4226651,35.8940135 C23.1338943,36.0479038 22.7750466,35.9385615 22.6211563,35.6497907 C22.5751227,35.5634099 22.5512073,35.4669697 22.5515474,35.369089 L22.6469991,7.89933366 Z" id="Rectangle"></path>
+                                </g>
+                                <text id="VIA" font-family="Rubik-Bold, Rubik" font-size="40.6588235" font-weight="bold" fill="#FFFFFF">
+                                    <tspan x="55" y="38">VIA</tspan>
+                                </text>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </svg>'>
+        </div>
+        <br>
+        <br>
+        <br>
+        <div class="r1">
+            <div class="parameter tax">
+                <span class="head">T</span><span id="t"></span>
             </div>
-            <div class="parameter">
-                X : <span id="x"></span>
-            </div>
-            <div class="parameter">
-                Y : <span id="y"></span>
-            </div>
-            <div class="parameter">
-                X : <span id="z"></span>
-            </div>
-            <div class="parameter">
-                <button id="btn">Start</button>
+            <div class="parameter xax">
+                <span class="head">X</span> <span id="x"></span>
             </div>
         </div>
-        <script src="/socket.io/socket.io.js"></script>
-        <script>
-         var elems = {
-             t: document.getElementById('t'),
-             x: document.getElementById('x'),
-             y: document.getElementById('y'),
-             z: document.getElementById('z'),
-             btn: document.getElementById('btn')
-         }
-         var running = false
+        <div class="r2">
+            <div class="parameter yax">
+                <span class="head">Y</span> <span id="y"></span>
+            </div>
+            <div class="parameter zax">
+                <span class="head">Z </span><span id="z"></span>
+            </div>
+        </div>
 
-         var socket = io()
+        <br>
+        <br>
+        <div class="parameter">
+            <button id="btn" class="start">Start</button>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var elems = {
+            t: document.getElementById('t'),
+            x: document.getElementById('x'),
+            y: document.getElementById('y'),
+            z: document.getElementById('z'),
+            tax: document.getElementsByClassName('tax')[0],
+            xax: document.getElementsByClassName('xax')[0],
+            yax: document.getElementsByClassName('yax')[0],
+            zax: document.getElementsByClassName('zax')[0],
+            btn: document.getElementById('btn')
+        }
+        var running = false
+        var socket = io()
 
-         var sensor = new Accelerometer()
-         sensor.onreading = () => {
-             let t = (new Date()).getTime()
-             socket.emit('data', {
-                 t: t,
-                 x: sensor.x,
-                 y: sensor.y,
-                 z: sensor.z
-             })
-             elems.t.innerText = t
-             elems.x.innerText = sensor.x
-             elems.y.innerText = sensor.y
-             elems.z.innerText = sensor.z
-         }
+        elems.tax.style.opacity = 0
+        elems.xax.style.opacity = 0
+        elems.yax.style.opacity = 0
+        elems.zax.style.opacity = 0
 
-         elems.btn.onclick = () => {
-             if (running) {
-                 sensor.stop()
-                 elems.btn.innerText = 'Start'
-             } else {
-                 sensor.start()
-                 elems.btn.innerText = 'Stop'
-             }
-             running = !running
-             socket.emit('status_change', {state: running})
-         }
-        </script>
-    </body>
+        var sensor = new Accelerometer()
+        sensor.onreading = () => {
+            let t = (new Date()).getTime()
+            socket.emit('data', {
+                t: t,
+                x: sensor.x,
+                y: sensor.y,
+                z: sensor.z
+            })
+            elems.t.innerText = t.toFixed(2)
+            elems.x.innerText = sensor.x.toFixed(2)
+            elems.y.innerText = sensor.y.toFixed(2)
+            elems.z.innerText = sensor.z.toFixed(2)
+        }
+
+        elems.btn.onclick = () => {
+            if (running) {
+                sensor.stop()
+                elems.tax.style.opacity = 0
+                elems.xax.style.opacity = 0
+                elems.yax.style.opacity = 0
+                elems.zax.style.opacity = 0
+                elems.btn.innerText = 'Start'
+                elems.btn.style.backgroundColor = '#4898FF'
+            } else {
+                sensor.start()
+                elems.tax.style.opacity = 100
+                elems.xax.style.opacity = 100
+                elems.yax.style.opacity = 100
+                elems.zax.style.opacity = 100
+                elems.btn.innerText = 'Stop'
+                elems.btn.style.backgroundColor = '#FF4757'
+            }
+            running = !running
+            socket.emit('status_change', {
+                state: running
+            })
+        }
+    </script>
+</body>
+
 </html>

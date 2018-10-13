@@ -72,7 +72,8 @@ var browserwidth =
                 field: "z",
                 type: "quantitative",
                 scale: {
-                    zero: false
+                    zero: false,
+                    domain: [5, 15]
                 }
             },
             x: {

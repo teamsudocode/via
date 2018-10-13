@@ -22,6 +22,10 @@ app.get('/mobile', function(req, res) {
   res.sendFile(__dirname + '/public/mobileview.html')
 })
 
+app.get('/vue.js', function(req, res) {
+  res.sendFile(__dirname + '/public/vue.js')
+})
+
 io.on('connection', function(socket){
   console.log('a user connected')
   socket.on('data', function(data) {
