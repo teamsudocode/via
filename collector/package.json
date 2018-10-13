@@ -4,8 +4,14 @@
   "description": "Data collection for The Via Project",
   "main": "app.js",
   "scripts": {
+    "app": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "teamsudocode",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.4",
+    "socketio": "^1.0.0",
+    "websockets": "^0.2.0"
+  }
 }

@@ -1,0 +1,38 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <div>
+            t :
+            <span id="t"></span>
+        </div>
+        <div>
+            x :
+            <span id="x"></span>
+        </div>
+        <div>
+            y :
+            <span id="y"></span>
+        </div>
+        <div>
+            z :
+            <span id="z"></span>
+        </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+         var elems = {
+             t: document.getElementById('t'),
+             x: document.getElementById('x'),
+             y: document.getElementById('y'),
+             z: document.getElementById('z')
+         }
+         var socket = io();
+         socket.on('data', (data) => {
+             t.innerText = data.t
+             x.innerText = data.x
+             y.innerText = data.y
+             z.innerText = data.z
+         })
+        </script>
+    </body>
+</html>
