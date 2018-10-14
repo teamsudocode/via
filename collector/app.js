@@ -18,6 +18,14 @@ app.get('/empty.svg', function(req, res) {
   res.sendFile(__dirname + '/public/empty.svg')
 })
 
+app.get('/favicon.png', function(req, res) {
+  res.sendFile(__dirname + '/public/favicon.png')
+})
+
+app.get('/logo.svg', function(req, res) {
+  res.sendFile(__dirname + '/public/logo.svg')
+})
+
 app.get('/mobile', function(req, res) {
   res.sendFile(__dirname + '/public/mobileview.html')
 })

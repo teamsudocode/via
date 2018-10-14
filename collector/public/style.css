@@ -207,15 +207,15 @@ table {
   border-radius: 100%;
 }
 
+.beep {
+  font-family: 'Rubik';
+}
+
 .info {
   display: flex;
   flex-direction: row;
+  flex-grow: 1;
   justify-content: space-between;
-}
-
-.info div {
-    flex-grow: 1;
-    max-width: 20%;
 }
 
 #vis {
@@ -226,6 +226,7 @@ table {
   font-family: "Rubik";
   font-size: 48px;
   color: #78ddeb;
+  line-height: 1.45em;
   letter-spacing: 0.4px;
 }
 
@@ -265,7 +266,7 @@ table {
 
 .empty>h1 {
   font-family: 'Rubik';
-  font-weight: 300!important;
+  font-weight: 300 !important;
   font-size: 48px;
   margin-top: 2em;
   color: rgba(255, 255, 255, 0.50);
