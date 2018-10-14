@@ -3,7 +3,7 @@
 
 <head>
     <meta charset='utf-8' />
-    <title>Add a GeoJSON line</title>
+    <title>Navigate the map with game-like controls</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.css' rel='stylesheet' />
@@ -19,19 +19,14 @@
             bottom: 0;
             width: 100%;
         }
-
-        .mapboxgl-popup {
-            max-width: 400px;
-            border-color: #FF4757;
-            padding: 1em;
-            font: 12px/20px 'Rubik';
-        }
     </style>
 </head>
 
 <body>
 
+
     <div id='map'></div>
+
     <script>
         (async function () {
             function fetchJSON(url, options) {
@@ -53,16 +48,118 @@
                 'https://api.mapbox.com/directions/v5/mapbox/driving/81.7686003%2C25.430287%3B81.802659%2C25.435606%3B81.8229763%2C25.4452978.json?access_token=pk.eyJ1IjoiZ3V5d2hvZGVzaWducyIsImEiOiJjam43ajRxbW4wYWV4M3Fwank4dTNsZzduIn0.ipHstqtP2KWs2NNPNJThgA&geometries=geojson'
             ).then((r) => r.json);
 
-            // console.log(data2);
             mapboxgl.accessToken =
                 'pk.eyJ1IjoiZ3V5d2hvZGVzaWducyIsImEiOiJjam43ajRxbW4wYWV4M3Fwank4dTNsZzduIn0.ipHstqtP2KWs2NNPNJThgA';
+
             var map = new mapboxgl.Map({
                 container: 'map',
                 style: 'mapbox://styles/mapbox/dark-v9',
-                center: [81.791422, 25.435019],
-                zoom: 15
+                center: [81.768462, 25.430054],
+                zoom: 15,
+                bearing: -20,
+                pitch: 100,
+                interactive: true
             });
-            
+
+            // pixels the map pans when the up or down arrow is clicked
+            var deltaDistance = 100;
+
+            // degrees the map rotates when the left or right arrow is clicked
+            var deltaDegrees = 25;
+
+            function easing(t) {
+                return t * (2 - t);
+            }
+
+            map.on('load', function () {
+                map.getCanvas().focus();
+
+                map.getCanvas().addEventListener('keydown', function (e) {
+                    if (e.which === 38) { // up
+                        map.panBy([0, -deltaDistance], {
+                            easing: easing
+                        });
+                    } else if (e.which === 40) { // down
+                        map.panBy([0, deltaDistance], {
+                            easing: easing
+                        });
+                    } else if (e.which === 37) { // left
+                        map.easeTo({
+                            bearing: map.getBearing() - deltaDegrees,
+                            easing: easing
+                        });
+                    } else if (e.which === 39) { // right
+                        map.easeTo({
+                            bearing: map.getBearing() + deltaDegrees,
+                            easing: easing
+                        });
+                    }
+                }, true);
+
+                let carAnimationCounter = 0;
+
+                const road1 = data2.routes[0].geometry.coordinates;
+
+                map.easeTo({
+                    bearing: map.getBearing() + 100,
+                    easing: easing
+                });
+
+                function carPoint(i) {
+                    return {
+                        "type": "Point",
+                        "coordinates": road1[i]
+                    };
+                }
+
+                console.log(road1[0])
+                map.addSource('point', {
+                    "type": "geojson",
+                    "data": carPoint(0)
+                });
+
+                map.addLayer({
+                    "id": "point",
+                    "source": "point",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": 10,
+                        "circle-color": "#D8A22F"
+                    }
+                });
+
+                console.log(road1[0])
+                var stop = false;
+                var frameCounter = 0;
+
+
+                function animateMarker(_) {
+                    if (stop) {
+                        frameCounter++;
+                        if (frameCounter > 12) {
+                            stop = false;
+                            frameCounter = 0;
+                        }
+                    } else {
+                        stop = true;
+                        if (carAnimationCounter < road1.length) {
+                            map.getSource('point').setData(carPoint(carAnimationCounter));
+                            console.log(carPoint(carAnimationCounter));
+                            carAnimationCounter++;
+                            map.panBy([0, -100], {
+                            easing: easing
+                        });
+                        }
+
+
+                    }
+                    requestAnimationFrame(animateMarker);
+                }
+                window.setTimeout(function () {
+                    animateMarker(0)
+                }, 300);
+            });
+
             const data3 = data1.routes[0].geometry.coordinates.slice(0, 7);
             const data4 = data1.routes[0].geometry.coordinates.slice(6, 8);
             const data5 = data1.routes[0].geometry.coordinates.slice(7);
@@ -122,7 +219,7 @@
             });
 
             map.on('mouseenter', 'route4', function (e) {
-                // Change the cursor style as a UI indicator.
+                // Change the cursor style as a UI indicaror.
                 map.getCanvas().style.cursor = 'pointer';
 
                 var coordinates = [(data4[0][0] + data4[1][0]) / 2, (data4[0][1] + data4[1][1]) / 2];
@@ -141,7 +238,7 @@
 
 
             map.on('mouseenter', 'route7', function (e) {
-                // Change the cursor style as a UI indicator.
+                // Change the cursor style as a UI indicaror.
                 map.getCanvas().style.cursor = 'pointer';
 
                 var coordinates = [(data7[0][0] + data7[1][0]) / 2, (data7[0][1] + data7[1][1]) / 2];
