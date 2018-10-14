@@ -5,6 +5,8 @@
     <meta charset='utf-8' />
     <title>Navigate the map with game-like controls</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.css' rel='stylesheet' />
     <style>
@@ -18,6 +20,11 @@
             top: 0;
             bottom: 0;
             width: 100%;
+        }
+
+        .toastify {
+            z-index: 9999;
+            font-family: 'Rubik'
         }
     </style>
 </head>
@@ -98,8 +105,15 @@
 
                 let carAnimationCounter = 0;
 
-                const road1 = data2.routes[0].geometry.coordinates;
-
+                let road1 = data2.routes[0].geometry.coordinates;
+                const specialPoint = data1.routes[0].geometry.coordinates[3];
+                console.log(specialPoint);
+                road1.splice(3, 0, specialPoint);
+                const specialPoints = [road1[3], road1[5]];
+                console.log(road1)
+                road1 = generateIntermediatePoints(road1);
+                const specialIndices = specialPoints.map(x => road1.indexOf(x));
+                console.log(road1)
                 map.easeTo({
                     bearing: map.getBearing() + 100,
                     easing: easing
@@ -132,11 +146,51 @@
                 var stop = false;
                 var frameCounter = 0;
 
+                var showError = (message, color) => {
+                    Toastify({
+                        text: message,
+                        duration: 3000,
+                        newWindow: true,
+                        close: true,
+                        gravity: "bottom", // `top` or `bottom`
+                        positionLeft: true, // `true` or `false`
+                        backgroundColor: color,
+                    }).showToast();
+
+                    console.log(
+                        'called'
+                    )
+                }
+
+                function generateIntermediatePoints(road) {
+                    const temp = [...road];
+                    for (let i = 0; i < road.length - 2; i++) {
+                        let point1 = road[i]
+                        let point2 = road[i + 1]
+
+                        const intermediatePoints = []
+                        const segments = 100;
+                        const diff = [(point2[0] - point1[0]) / segments, (point2[1] - point1[1]) /
+                            segments
+                        ]
+                        for (let j = 1; j < segments; j++) {
+                            intermediatePoints.push([point1[0] + j * diff[0], point1[1] + j * diff[1]]);
+                        }
+                        if (i == 0) {
+                            console.log(point1)
+                            console.log(point2)
+                            console.log(intermediatePoints)
+
+                        }
+                        temp.splice(i * segments + 1, 0, ...intermediatePoints);
+                    }
+                    return temp;
+                }
 
                 function animateMarker(_) {
                     if (stop) {
                         frameCounter++;
-                        if (frameCounter > 12) {
+                        if (frameCounter > 1) {
                             stop = false;
                             frameCounter = 0;
                         }
@@ -144,11 +198,16 @@
                         stop = true;
                         if (carAnimationCounter < road1.length) {
                             map.getSource('point').setData(carPoint(carAnimationCounter));
+                            if (carAnimationCounter === specialIndices[0]) {
+                                showError('A Better route exists', '#4898FF')
+                            } else if (carAnimationCounter === specialIndices[1]) {
+                                showError('Rugged Road Approaching', '#FF4757');
+                            }
                             console.log(carPoint(carAnimationCounter));
                             carAnimationCounter++;
-                            map.panBy([0, -100], {
-                            easing: easing
-                        });
+                            map.panBy([0, -10], {
+                                easing: easing
+                            });
                         }
 
 
