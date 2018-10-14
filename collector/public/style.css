@@ -213,6 +213,11 @@ table {
   justify-content: space-between;
 }
 
+.info div {
+    flex-grow: 1;
+    max-width: 20%;
+}
+
 #vis {
   margin-bottom: 2em;
 }

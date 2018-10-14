@@ -173,7 +173,7 @@ const GRAVITY = 9.8,
 
               } else {
                 console.log('jerk at', data.t, 'after', t_since_prev_hiccup, 'seconds')
-                app.eventType = 'Encountered a hiccup'
+                app.eventType = 'Hiccup'
                 app.condition = 'Poor'
 
               }
