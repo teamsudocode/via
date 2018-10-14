@@ -5,6 +5,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+*.zip
+analysis/sensorlab_2018*
+
 # Runtime data
 pids
 *.pid
@@ -71,3 +74,4 @@ typings/
 
 # Serverless directories
 .serverless
+sensorlab*
