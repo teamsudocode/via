@@ -5,6 +5,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vega@3"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@3"></script>
+    <script src="http://localhost:3000/socket.io/socket.io.js" ></script>
 </head>
 
 <body style="background-color: #0f1217">
@@ -12,109 +13,195 @@
     <div id="vis"></div>
 
     <script>
-        (async function () {
-            function fetchJSON(url, options) {
-                return fetch(url, options).then(function (response) {
-                    return response.json().then(function (data) {
-                        return {
-                            status: response.status,
-                            headers: response.headers,
-                            json: data
-                        }
-                    })
-                })
-            }
-            let data = await fetchJSON('./data.json').then((r) => r.json);
-            data = data.data.map(obj => ({
-                t: obj.t % 1000000,
-                x: obj.x,
-                y: obj.y,
-                z: obj.y
-            }));
-            const spec = {
-                "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-                "description": "A simple bar chart with embedded data.",
-                "width": 480,
-                "data": {
-                    "name": "table"
-                },
-                "mark": {
-                    "type": "area",
-                    "line": {
-                        "color": "#4899ff",
-                        "strokeWidth": 2
-                    },
-                    "color": "#111821"
-                },
-                "encoding": {
-                    "y": {
-                        "field": "z",
-                        "type": "quantitative",
-                        "scale": {
-                            "zero": false
-                        }
-                    },
-                    "x": {
-                        "field": "t",
-                        "type": "temporal"
-                    },
-                    "opacity": {
-                        "value": 1
-                    }
-                },
-                "config": {
-                    "axis": {
-                        "grid": false,
-                        "ticks": false,
-                        "domainColor": "#000000"
-                    }
+//Vega
+     var browserwidth =
+         window.innerWidth ||
+         document.documentElement.clientWidth ||
+         document.body.clientWidth;
+(async function () {
+    var socket = io('http://localhost:3000' );
+         /* let specs = await fetchJSON('/spec.json').then((r) => r.json); */
+         /* let spec_size = specs.smooth.length */
 
-
+    const spec = {
+        $schema: "https://vega.github.io/schema/vega-lite/v2.json",
+        description: "A simple bar chart with embedded data.",
+        width: browserwidth - 128,
+        height: 300,
+        data: {
+            name: "table"
+        },
+        mark: {
+            type: "area",
+            line: {
+                color: "#4899ff",
+                strokeWidth: 2
+            },
+            color: "#111821"
+        },
+        encoding: {
+            y: {
+                field: "z",
+                type: "quantitative",
+                scale: {
+                    zero: false,
+                    domain: [5, 15]
                 }
-            };
-            const dataInView = [];
-            vegaEmbed('#vis', spec, {
-                    renderer: "svg",
-                    actions: false
-                })
-                .then(function (result) {
-                    const view = result.view;
-                    // const dataInView = []
-                    // connect to simple echo server
-                    const conn = new WebSocket("wss://echo.websocket.org");
+            },
+            x: {
+                field: "t",
+                type: "temporal"
+            },
+            opacity: {
+                value: 1
+            }
+        },
+        config: {
+            axis: {
+                grid: false,
+                ticks: false,
+                domainColor: "#000000"
+            },
+            style: {
+                view: {
+                    stroke: 'transparent'
+                }
+            }
+        }
+    };
+  const dataInView = [];
+         var categorizationWindow = []
+         let v = 0, s = 0, prev_t = (new Date()).getTime()
+    vegaEmbed("#vis", spec, {
+            renderer: "svg",
+            actions: false
+        })
+        .then(function (result) {
+            const view = result.view;
+            // const dataInView = []
+            // connect to simple echo server
+            const conn = new WebSocket("wss://echo.websocket.org");
+            var prevAcc = undefined
+            var acc_zero_for = 0
 
-                    conn.onopen = function (event) {
-                        // insert data as it arrives from the socket
-                        conn.onmessage = function (event) {
-                            console.log(event.data);
-                            dataInView.push(JSON.parse(event.data).t);
-                            // Use the Vega view api to insert data
-                            // view.insert("table", JSON.parse(event.data)).run();
-                            view.insert("table", JSON.parse(event.data)).run()
-                            // console.log(dataInView);
-                            if (dataInView.length > 100) {
-                                const t = dataInView.shift()
-                                console.log(t)
-                                view.remove("table", function (item) {
-                                    return item.t === t
-                                }).run();
-                                console.log(dataInView);
-                                // dataInView.shift();
-                            }
-                            //view.change('table', changeSet).run();
-                        }
+            var ytoshow = []
+            var prev_hiccup_at = 0
+            var hiccups_past_5_seconds = 0
 
-                        // send some data into the echo socket every second
-                        const interval = window.setInterval(function () {
-                            if (data.length) {
-                                conn.send(JSON.stringify(data.shift()));
-                            } else {
-                                clearInterval(interval);
-                            }
-                        }, 100);
+            conn.onopen = function (event) {
+                const view = result.view;
+                // const dataInView = []
+                // connect to simple echo server
+                // const conn = new WebSocket("wss://echo.websocket.org");
+
+                socket.on('data', function(data) {
+
+                    if (prevAcc !== undefined) {
+                        let vel = (data.y - prevAcc.y) / ((data.t - prevAcc.t) / 1000)
+                        /* app.speed = Math.abs(vel) */
                     }
+                  dataInView.push(data.t)
+                  categorizationWindow.push(data.z)
+                    prevAcc = data
+
+                    // calculate displacement
+                    /* let dt = (data.t - prev_t)/1000 */
+                    /* let a = Math.abs(data.z-9.8) < 1 ? 0 : (data.z - 9.8) */
+                    /* acc_zero_for += (a === 0) ? 1 : 0 */
+                    /* if (acc_zero_for === 10) { */
+                    /* v = 0 */
+                    /* console.log('vel is zero') */
+                    /* } */
+                    /* v = v + a * dt */
+                    /* s = s + v * dt */
+                    /* data.z= s */
+                    /* prev_t = data.t */
+                    /* console.log(s) */
+                    if (ytoshow.length < 5) {
+                        ytoshow.push(data.z)
+                        view.insert('table', data).run()
+                    } else {
+                        let res = signum(gradient(highpass_filter(ytoshow, 2, 9.8)))
+                        let status = is_hiccup(res)
+                        if (status !== false) {
+                            ytoshow = ytoshow.slice(status,)
+                            prev_hiccup_at = data.t
+
+                            hiccups_past_5_seconds += (data.t-prev_hiccup_at)/1000 < 5 ? 1 : 0
+                            if (hiccups_past_5_seconds > 5) {
+                                console.log('rugged road at', data.t)
+                                hiccups_past_5_seconds--
+                            } else {
+                                console.log('jerk at', data.t, 'after', (data.t-prev_hiccup_at)/1000, 'seconds')
+                            }
+
+                        } else {
+                            ytoshow.shift()
+                        }
+                        view.insert('table', res[res.length-1]).run()
+                    }
+
+                    /* if (categorizationWindow.length == spec_size) {
+                     *   let match = categorizeRoute(categorizationWindow.slice(-spec_size, ), specs)
+                     *   if (match.type)
+                     *     console.log(match)
+                     *   categorizationWindow = categorizationWindow.slice(1)
+                     * }
+                     */
+                    if (dataInView.length > 100) {
+                        const t = dataInView.shift()
+                        /* console.log(t) */
+                        view.remove("table", function (item) {
+                            return item.t === t
+                        }).run();
+                        /* console.log(dataInView); */
+                    }
+
                 })
-                .catch(console.warn);
-        })()
+
+                socket.on('status_change', function(res) {
+                    /* app.active = res.state */
+                })
+            };
+        })
+        .catch(console.warn);
+     })();
+
+
+     function signum(arr) {
+         return arr.map(x => (x > 0 ? 1 : (x == 0 ? 0 : -1)))
+     }
+
+     function is_hiccup(stream) {
+         let strides_to_check = [2,3,4]
+         for (let stride of strides_to_check) {
+             for (let i = 0; i < stream.length-stride; i++) {
+                 let cur_window = stream.slice(i, i+stride)
+                 let is_all_zero = cur_window.filter(x => x !== 0).length !== 0
+                 let is_sum_zero = cur_window.reduce((val, acc) => val + acc) === 0
+                 if (!is_all_zero) {
+                     break;  // check for next stride
+                 }
+
+                 if (is_sum_zero) {
+                     console.log(cur_window)
+                     return i+stride+1;
+                 }
+
+             }
+         }
+         return false
+     }
+
+     function gradient(_arr) {
+         let arr1 = [..._arr, _arr[_arr.length-1]]
+         let arr2 = [0, ..._arr]
+         let grad = arr2.map((b, i) => arr1[i]-b)
+         return grad
+     }
+
+     function highpass_filter(_arr, cutoff, base=0) {
+         return _arr.map(x => Math.abs(x-base) > cutoff ? x : 0);
+     }
     </script>
 </body>
