@@ -289,7 +289,7 @@
         elems.yax.style.opacity = 0
         elems.zax.style.opacity = 0
 
-        var sensor = new Accelerometer()
+        var sensor = new Accelerometer({frequency: 20})
         sensor.onreading = () => {
             let t = (new Date()).getTime()
             socket.emit('data', {
